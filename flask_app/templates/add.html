@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="h3 mb-3">Ajouter un contact</h1>
+
+<form class="bg-white border rounded p-4" action="{{ url_for('add_contact') }}" method="post">
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label class="form-label">Nom</label>
+            <input class="form-control" type="text" name="name" required>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Email</label>
+            <input class="form-control" type="email" name="email" required>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Telephone</label>
+            <input class="form-control" type="text" name="phone" required>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Categorie</label>
+            <select class="form-select" name="category">
+                <option value="Client">Client</option>
+                <option value="Fournisseur">Fournisseur</option>
+                <option value="Entreprise">Entreprise</option>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Adresse</label>
+            <input class="form-control" type="text" name="address">
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Fonction</label>
+            <input class="form-control" type="text" name="job_title">
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Entreprise</label>
+            <input class="form-control" type="text" name="company">
+        </div>
+    </div>
+    <div class="mt-4 d-flex gap-2">
+        <button class="btn btn-primary" type="submit">Ajouter</button>
+        <a class="btn btn-outline-secondary" href="{{ url_for('index') }}">Annuler</a>
+    </div>
+</form>
+{% endblock %}

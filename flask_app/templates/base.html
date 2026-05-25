@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Carnet d'Adresses</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #F5F5F5;
+            font-family: Helvetica, Arial, sans-serif;
+        }
+        .navbar {
+            background: #4A90D9;
+        }
+        .btn-primary {
+            background: #4A90D9;
+            border-color: #4A90D9;
+        }
+        .table thead {
+            background: #4A90D9;
+            color: white;
+        }
+        footer {
+            color: #666666;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">Carnet d'Adresses</a>
+            <div class="navbar-nav">
+                <a class="nav-link text-white" href="{{ url_for('index') }}">Contacts</a>
+                <a class="nav-link text-white" href="{{ url_for('add_form') }}">Ajouter</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container py-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="container py-3 text-center">
+        Carnet d'Adresses - Projet Python
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

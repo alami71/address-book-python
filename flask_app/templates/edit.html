@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="h3 mb-3">Modifier un contact</h1>
+
+<form class="bg-white border rounded p-4" action="{{ url_for('edit_contact', contact_id=contact['id']) }}" method="post">
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label class="form-label">Nom</label>
+            <input class="form-control" type="text" name="name" value="{{ contact['name'] }}" required>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Email</label>
+            <input class="form-control" type="email" name="email" value="{{ contact['email'] }}" required>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Telephone</label>
+            <input class="form-control" type="text" name="phone" value="{{ contact['phone'] }}" required>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Categorie</label>
+            <select class="form-select" name="category">
+                <option value="Client" {% if contact['category'] == 'Client' %}selected{% endif %}>Client</option>
+                <option value="Fournisseur" {% if contact['category'] == 'Fournisseur' %}selected{% endif %}>Fournisseur</option>
+                <option value="Entreprise" {% if contact['category'] == 'Entreprise' %}selected{% endif %}>Entreprise</option>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Adresse</label>
+            <input class="form-control" type="text" name="address" value="{{ contact['address'] }}">
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Fonction</label>
+            <input class="form-control" type="text" name="job_title" value="{{ contact['job_title'] }}">
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Entreprise</label>
+            <input class="form-control" type="text" name="company" value="{{ contact['company'] }}">
+        </div>
+    </div>
+    <div class="mt-4 d-flex gap-2">
+        <button class="btn btn-primary" type="submit">Enregistrer</button>
+        <a class="btn btn-outline-secondary" href="{{ url_for('index') }}">Annuler</a>
+    </div>
+</form>
+{% endblock %}

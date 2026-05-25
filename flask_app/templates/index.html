@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-md-center mb-3">
+    <h1 class="h3 m-0">Contacts</h1>
+    <form class="d-flex gap-2" action="{{ url_for('search') }}" method="get">
+        <input class="form-control" type="search" name="q" value="{{ search_text }}" placeholder="Nom ou email">
+        <button class="btn btn-primary" type="submit">Rechercher</button>
+        <a class="btn btn-outline-secondary" href="{{ url_for('index') }}">Reset</a>
+    </form>
+</div>
+
+<div class="table-responsive bg-white border rounded">
+    <table class="table table-hover align-middle mb-0">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Email</th>
+                <th>Telephone</th>
+                <th>Categorie</th>
+                <th>Adresse</th>
+                <th>Fonction</th>
+                <th>Entreprise</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for contact in contacts %}
+                <tr>
+                    <td>{{ contact["name"] }}</td>
+                    <td>{{ contact["email"] }}</td>
+                    <td>{{ contact["phone"] }}</td>
+                    <td>{{ contact["category"] }}</td>
+                    <td>{{ contact["address"] }}</td>
+                    <td>{{ contact["job_title"] }}</td>
+                    <td>{{ contact["company"] }}</td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-primary" href="{{ url_for('edit_form', contact_id=contact['id']) }}">Modifier</a>
+                        <a class="btn btn-sm btn-outline-danger" href="{{ url_for('delete_contact', contact_id=contact['id']) }}">Supprimer</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="8" class="text-center text-muted py-4">Aucun contact trouve.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
