@@ -1,4 +1,5 @@
 flask
+python-dotenv
 pywhatkit
 
 # hashlib is built into Python, so it does not need installation.

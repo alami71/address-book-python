@@ -3,6 +3,11 @@ import smtplib
 from email.mime.text import MIMEText
 from tkinter import messagebox
 
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
 
 # This function converts a local Moroccan phone number to WhatsApp international format.
 # Parameters: phone as a string.
