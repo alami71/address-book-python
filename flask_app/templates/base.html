@@ -30,10 +30,16 @@
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
             <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">Carnet d'Adresses</a>
-            <div class="navbar-nav">
-                <a class="nav-link text-white" href="{{ url_for('index') }}">Contacts</a>
-                <a class="nav-link text-white" href="{{ url_for('add_form') }}">Ajouter</a>
-            </div>
+            {% if session.get("admin_username") %}
+                <div class="navbar-nav">
+                    <a class="nav-link text-white" href="{{ url_for('index') }}">Contacts</a>
+                    <a class="nav-link text-white" href="{{ url_for('add_form') }}">Ajouter</a>
+                </div>
+                <div class="d-flex align-items-center gap-3 text-white">
+                    <span>{{ session.get("admin_username") }}</span>
+                    <a class="btn btn-sm btn-outline-light" href="{{ url_for('logout') }}">Deconnexion</a>
+                </div>
+            {% endif %}
         </div>
     </nav>
 

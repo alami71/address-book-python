@@ -202,6 +202,22 @@ class FlaskDatabase:
         connection.close()  # Close the connection.
         return contacts  # Return matching contacts.
 
+    # This function checks administrator credentials.
+    # Parameters: username and password as strings.
+    # Returns: True if credentials are correct, False otherwise.
+    def check_admin(self, username, password):
+        connection = self.connect()  # Open a database connection.
+        cursor = connection.cursor()  # Create a cursor.
+        password_hash = self.hash_password(password)  # Hash the typed password.
+        # This SQL query searches for an admin with matching username and password hash.
+        cursor.execute(
+            "SELECT id FROM admins WHERE username = ? AND password_hash = ?",
+            (username, password_hash),
+        )
+        admin = cursor.fetchone()  # Read the matching admin if it exists.
+        connection.close()  # Close the connection.
+        return admin is not None  # Return True only when credentials match.
+
     # This function creates a default admin if missing.
     # Parameters: none.
     # Returns: nothing.

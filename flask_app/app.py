@@ -3,6 +3,7 @@ from flask import flash
 from flask import redirect
 from flask import render_template
 from flask import request
+from flask import session
 from flask import url_for
 import os
 import sys
@@ -21,6 +22,44 @@ from communication import send_whatsapp_result
 app = Flask(__name__)  # Create the Flask application.
 app.secret_key = "change-this-secret-key"  # Secret key used by flash messages.
 database = FlaskDatabase()  # Create the database helper.
+
+
+# This function protects all Flask pages except login and static files.
+# Parameters: none.
+# Returns: redirect response or nothing.
+@app.before_request
+def require_login():
+    public_endpoints = ["login", "static"]  # Pages that do not need authentication.
+    if request.endpoint in public_endpoints:  # Allow public endpoints.
+        return None
+    if session.get("admin_username") is None:  # Redirect anonymous users to login.
+        flash("Connectez-vous pour acceder a l'application.", "warning")
+        return redirect(url_for("login"))
+    return None
+
+
+# This function shows and handles the admin login page.
+# Parameters: none.
+# Returns: rendered HTML page or redirect response.
+def login():
+    if request.method == "POST":  # Process login form submission.
+        username = request.form.get("username", "")  # Read username.
+        password = request.form.get("password", "")  # Read password.
+        if database.check_admin(username, password):  # Verify admin credentials.
+            session["admin_username"] = username  # Store logged admin in the session.
+            flash("Connexion reussie.", "success")
+            return redirect(url_for("index"))
+        flash("Username ou password incorrect.", "danger")
+    return render_template("login.html")  # Show login page.
+
+
+# This function logs out the current admin.
+# Parameters: none.
+# Returns: redirect response to the login page.
+def logout():
+    session.pop("admin_username", None)  # Remove logged admin from the session.
+    flash("Deconnexion reussie.", "success")
+    return redirect(url_for("login"))
 
 
 # This function shows all contacts on the home page.
@@ -156,6 +195,8 @@ def search():
     return render_template("index.html", contacts=contacts, search_text=search_text)  # Show results.
 
 
+app.add_url_rule("/login", "login", login, methods=["GET", "POST"])  # Register the login route.
+app.add_url_rule("/logout", "logout", logout, methods=["GET"])  # Register the logout route.
 app.add_url_rule("/", "index", index, methods=["GET"])  # Register the home route without decorators.
 app.add_url_rule("/add", "add_form", add_form, methods=["GET"])  # Register the add form route.
 app.add_url_rule("/add", "add_contact", add_contact, methods=["POST"])  # Register the add save route.
