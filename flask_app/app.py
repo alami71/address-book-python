@@ -4,8 +4,18 @@ from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
+import os
+import sys
 
 from database import FlaskDatabase
+
+
+project_folder = os.path.dirname(os.path.dirname(__file__))
+if project_folder not in sys.path:
+    sys.path.insert(0, project_folder)
+
+from communication import send_email_result
+from communication import send_whatsapp_result
 
 
 app = Flask(__name__)  # Create the Flask application.
@@ -80,6 +90,63 @@ def delete_contact(contact_id):
     return redirect(url_for("index"))  # Return to home.
 
 
+# This function shows the email form for one contact.
+# Parameters: contact_id from the URL as an integer.
+# Returns: rendered HTML page or redirect response.
+def email_form(contact_id):
+    contact = database.find_contact_by_id(contact_id)  # Load the contact by id.
+    if contact is None:  # Handle missing contact.
+        flash("Contact introuvable.", "danger")  # Show error message.
+        return redirect(url_for("index"))  # Return to home.
+    return render_template("send_email.html", contact=contact)  # Show email form.
+
+
+# This function sends an email to one contact.
+# Parameters: contact_id from the URL as an integer.
+# Returns: redirect response to the home page.
+def email_contact(contact_id):
+    contact = database.find_contact_by_id(contact_id)  # Load the contact by id.
+    if contact is None:  # Handle missing contact.
+        flash("Contact introuvable.", "danger")  # Show error message.
+        return redirect(url_for("index"))  # Return to home.
+    subject = request.form.get("subject", "")  # Read the email subject.
+    body = request.form.get("body", "")  # Read the email body.
+    if subject.strip() == "" or body.strip() == "":  # Check required message fields.
+        flash("Sujet et message sont obligatoires.", "danger")
+        return render_template("send_email.html", contact=contact)
+    success, message = send_email_result(contact["email"], subject, body)  # Send the email.
+    flash(message, "success" if success else "danger")  # Show feedback message.
+    return redirect(url_for("index"))  # Return to home.
+
+
+# This function shows the WhatsApp form for one contact.
+# Parameters: contact_id from the URL as an integer.
+# Returns: rendered HTML page or redirect response.
+def whatsapp_form(contact_id):
+    contact = database.find_contact_by_id(contact_id)  # Load the contact by id.
+    if contact is None:  # Handle missing contact.
+        flash("Contact introuvable.", "danger")  # Show error message.
+        return redirect(url_for("index"))  # Return to home.
+    return render_template("send_whatsapp.html", contact=contact)  # Show WhatsApp form.
+
+
+# This function sends a WhatsApp message to one contact.
+# Parameters: contact_id from the URL as an integer.
+# Returns: redirect response to the home page.
+def whatsapp_contact(contact_id):
+    contact = database.find_contact_by_id(contact_id)  # Load the contact by id.
+    if contact is None:  # Handle missing contact.
+        flash("Contact introuvable.", "danger")  # Show error message.
+        return redirect(url_for("index"))  # Return to home.
+    message_text = request.form.get("message", "")  # Read the WhatsApp message.
+    if message_text.strip() == "":  # Check required message field.
+        flash("Message WhatsApp obligatoire.", "danger")
+        return render_template("send_whatsapp.html", contact=contact)
+    success, message = send_whatsapp_result(contact["phone"], message_text)  # Send the WhatsApp message.
+    flash(message, "success" if success else "danger")  # Show feedback message.
+    return redirect(url_for("index"))  # Return to home.
+
+
 # This function searches contacts by name or email.
 # Parameters: none.
 # Returns: rendered HTML page with search results.
@@ -95,6 +162,10 @@ app.add_url_rule("/add", "add_contact", add_contact, methods=["POST"])  # Regist
 app.add_url_rule("/edit/<int:contact_id>", "edit_form", edit_form, methods=["GET"])  # Register edit form route.
 app.add_url_rule("/edit/<int:contact_id>", "edit_contact", edit_contact, methods=["POST"])  # Register edit save route.
 app.add_url_rule("/delete/<int:contact_id>", "delete_contact", delete_contact, methods=["GET"])  # Register delete route.
+app.add_url_rule("/email/<int:contact_id>", "email_form", email_form, methods=["GET"])  # Register email form route.
+app.add_url_rule("/email/<int:contact_id>", "email_contact", email_contact, methods=["POST"])  # Register email send route.
+app.add_url_rule("/whatsapp/<int:contact_id>", "whatsapp_form", whatsapp_form, methods=["GET"])  # Register WhatsApp form route.
+app.add_url_rule("/whatsapp/<int:contact_id>", "whatsapp_contact", whatsapp_contact, methods=["POST"])  # Register WhatsApp send route.
 app.add_url_rule("/search", "search", search, methods=["GET"])  # Register search route.
 
 

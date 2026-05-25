@@ -29,13 +29,12 @@ def format_phone_for_whatsapp(phone):
 
 # This function sends an email with Gmail SMTP.
 # Parameters: to_email, subject, and body as strings.
-# Returns: True if sent, False otherwise.
-def send_email(to_email, subject, body):
+# Returns: a tuple containing success as bool and message as string.
+def send_email_result(to_email, subject, body):
     sender_email = os.environ.get("GMAIL_EMAIL")  # Read Gmail address from environment variables.
     sender_password = os.environ.get("GMAIL_PASSWORD")  # Read Gmail app password from environment variables.
     if sender_email is None or sender_password is None:  # Check if credentials are missing.
-        messagebox.showerror("Erreur", "Variables GMAIL_EMAIL et GMAIL_PASSWORD manquantes.\nExemple PowerShell:\n$env:GMAIL_EMAIL='votre@gmail.com'\n$env:GMAIL_PASSWORD='mot_de_passe_application'")
-        return False
+        return False, "Variables GMAIL_EMAIL et GMAIL_PASSWORD manquantes."
 
     message = MIMEText(body)  # Create the text email body.
     message["From"] = sender_email  # Set sender email header.
@@ -48,24 +47,44 @@ def send_email(to_email, subject, body):
         smtp_server.login(sender_email, sender_password)  # Login with Gmail credentials.
         smtp_server.sendmail(sender_email, to_email, message.as_string())  # Send the email message.
         smtp_server.quit()  # Close the SMTP connection.
-        messagebox.showinfo("Succes", "Email envoye avec succes.")
-        return True
+        return True, "Email envoye avec succes."
     except Exception as error:
-        messagebox.showerror("Erreur", "Email non envoye: " + str(error))
-        return False
+        return False, "Email non envoye: " + str(error)
+
+
+# This function sends an email with Gmail SMTP and shows Tkinter feedback.
+# Parameters: to_email, subject, and body as strings.
+# Returns: True if sent, False otherwise.
+def send_email(to_email, subject, body):
+    success, message = send_email_result(to_email, subject, body)  # Send email and get feedback.
+    if success:
+        messagebox.showinfo("Succes", message)
+    else:
+        messagebox.showerror("Erreur", message)
+    return success
 
 
 # This function sends a WhatsApp message instantly.
 # Parameters: phone and message as strings.
-# Returns: True if the call succeeds, False otherwise.
-def send_whatsapp(phone, message):
+# Returns: a tuple containing success as bool and message as string.
+def send_whatsapp_result(phone, message):
     # The phone number must include country code, for example +212612345678.
     formatted_phone = format_phone_for_whatsapp(phone)  # Convert local phone number to international format.
     try:
         import pywhatkit  # Import pywhatkit only when WhatsApp sending is requested.
         pywhatkit.sendwhatmsg_instantly(formatted_phone, message)  # Open WhatsApp Web and send the message.
-        messagebox.showinfo("Succes", "Message WhatsApp envoye.")
-        return True
+        return True, "Message WhatsApp envoye."
     except Exception as error:
-        messagebox.showerror("Erreur", "WhatsApp non envoye: " + str(error))
-        return False
+        return False, "WhatsApp non envoye: " + str(error)
+
+
+# This function sends a WhatsApp message instantly and shows Tkinter feedback.
+# Parameters: phone and message as strings.
+# Returns: True if the call succeeds, False otherwise.
+def send_whatsapp(phone, message):
+    success, feedback_message = send_whatsapp_result(phone, message)  # Send WhatsApp and get feedback.
+    if success:
+        messagebox.showinfo("Succes", feedback_message)
+    else:
+        messagebox.showerror("Erreur", feedback_message)
+    return success

@@ -61,7 +61,7 @@ Pour WhatsApp, les numeros doivent normalement contenir l'indicatif pays, par ex
 3. Interface Tkinter avec liste, boutons et messages.
 4. Authentification admin avec SHA-256.
 5. Base SQLite avec contacts, admins et export CSV.
-6. Application Flask avec Bootstrap 5.
+6. Application Flask avec Bootstrap 5, ajout, modification, suppression, email et WhatsApp.
 7. Envoi email et WhatsApp.
 8. Champs etendus: categorie, adresse, fonction, entreprise.
 9. Agenda hebdomadaire Tkinter.
